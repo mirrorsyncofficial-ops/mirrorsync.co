@@ -1,0 +1,34 @@
+# Environment files - NEVER COMMIT THESE
+.env
+.env.local
+.env.production
+.env.staging
+
+# Solana & Crypto Keys - CRITICAL SECURITY  
+*.key
+*.pem
+*secret*
+*private*
+wallet.json
+keypair.json
+
+# Node.js
+node_modules/
+*.log
+
+# Rust
+/target
+Cargo.lock
+
+# IDE files
+.vscode/settings.json
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build files
+dist/
+build/
+Add security-first .gitignore
