@@ -228,3 +228,4 @@ For partnership and investment opportunities:
 ---
 
 ⭐ **Star this repository if you're interested in the future of decentralized copy trading!**
+Add comprehensive professional README
