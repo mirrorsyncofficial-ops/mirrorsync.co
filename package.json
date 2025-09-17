@@ -1,0 +1,29 @@
+{
+  "name": "mirror-sync-platform",
+  "version": "1.0.0",
+  "description": "Revolutionary DeFi copy-trading platform on Solana",
+  "main": "index.js",
+  "scripts": {
+    "build": "anchor build",
+    "test": "anchor test",
+    "deploy": "anchor deploy",
+    "dev": "next dev",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.28.0",
+    "@solana/web3.js": "^1.77.3",
+    "@solana/wallet-adapter-react": "^0.15.32",
+    "next": "^13.4.0",
+    "react": "^18.2.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0"
+  },
+  "keywords": ["solana", "defi", "copy-trading", "blockchain"],
+  "author": "Mirror Sync Team",
+  "license": "MIT"
+}
+Add package.json with dependencies
