@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import '../styles/globals.css'
 
    function MyApp({ Component, pageProps }) {
@@ -5,3 +6,8 @@ import '../styles/globals.css'
    }
 
    export default MyApp
+=======
+export default function App({ Component, pageProps }) {
+  return <Component {...pageProps} />
+}
+>>>>>>> 8bc6359 (Add beautiful landing page with inline styles)
