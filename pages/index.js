@@ -5,20 +5,64 @@ import { useState } from 'react';
 export default function Home() {
   const [state, handleSubmit] = useForm("mkgqvbkr");
   const [email, setEmail] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <style jsx>{`
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: linear-gradient(to bottom, #1a1a2e, #0f0f23, #1a1a2e); }
+        @media (max-width: 768px) {
+          .desktop-nav { display: none; }
+        }
+        @media (min-width: 769px) {
+          .mobile-menu-btn { display: none; }
+        }
       `}</style>
 
       {/* Header */}
       <div style={{ position: 'fixed', top: 0, width: '100%', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(147,51,234,0.2)', zIndex: 50, padding: '1.5rem 2rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ fontSize: '1.5rem', fontWeight: 'bold', background: 'linear-gradient(to right, #a855f7, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>MirrorSync</div>
+          
+          {/* Desktop Navigation */}
+          <nav className="desktop-nav" style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+            <a href="#features" style={{ color: '#9ca3af', textDecoration: 'none', fontWeight: '500' }}>Features</a>
+            <a href="#how-it-works" style={{ color: '#9ca3af', textDecoration: 'none', fontWeight: '500' }}>How It Works</a>
+            <a href="#pricing" style={{ color: '#9ca3af', textDecoration: 'none', fontWeight: '500' }}>Pricing</a>
+            <a href="#waitlist" style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', background: 'linear-gradient(135deg, #9333ea, #22d3ee)', color: 'white', textDecoration: 'none', fontWeight: '600' }}>Join Waitlist</a>
+          </nav>
+
+          {/* Mobile Menu Button */}
+          <button 
+            className="mobile-menu-btn"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer', padding: '0.5rem' }}
+          >
+            {mobileMenuOpen ? '✕' : '☰'}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          onClick={() => setMobileMenuOpen(false)}
+          style={{ position: 'fixed', top: '73px', left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', zIndex: 40 }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{ background: 'rgba(15,15,35,0.98)', backdropFilter: 'blur(20px)', padding: '2rem', borderBottom: '1px solid rgba(147,51,234,0.2)' }}
+          >
+            <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <a href="#features" onClick={() => setMobileMenuOpen(false)} style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem', fontWeight: '500' }}>Features</a>
+              <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem', fontWeight: '500' }}>How It Works</a>
+              <a href="#pricing" onClick={() => setMobileMenuOpen(false)} style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem', fontWeight: '500' }}>Pricing</a>
+              <a href="#waitlist" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', textAlign: 'center', padding: '1rem', borderRadius: '8px', background: 'linear-gradient(135deg, #9333ea, #22d3ee)', color: 'white', textDecoration: 'none', fontWeight: '600', fontSize: '1.2rem', marginTop: '1rem' }}>Join Waitlist</a>
+            </nav>
+          </div>
+        </div>
+      )}
 
       {/* Hero */}
       <div style={{ padding: '10rem 2rem 5rem', textAlign: 'center', maxWidth: '1200px', margin: '0 auto', color: 'white' }}>
@@ -35,7 +79,7 @@ export default function Home() {
       </div>
 
       {/* CTA with Formspree */}
-      <div style={{ padding: '6rem 2rem', textAlign: 'center', color: 'white' }}>
+      <div id="waitlist" style={{ padding: '6rem 2rem', textAlign: 'center', color: 'white' }}>
         <h2 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '2rem' }}>
           {state.succeeded ? '🎉 Welcome to the Waitlist!' : 'Stop Losing Money.<br />Start Copying Winners.'}
         </h2>
@@ -56,7 +100,7 @@ export default function Home() {
           <>
             <p style={{ fontSize: '1.2rem', color: '#9ca3af', marginBottom: '2rem' }}>Join 500+ traders on the waitlist</p>
             
-            <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', maxWidth: '600px', margin: '0 auto' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', maxWidth: '600px', margin: '0 auto', flexWrap: 'wrap' }}>
               <input 
                 id="email"
                 type="email" 
@@ -65,14 +109,14 @@ export default function Home() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                style={{ flex: 1, padding: '1.2rem 1.5rem', background: '#1f2937', border: '1px solid rgba(147,51,234,0.3)', borderRadius: '12px', color: 'white', fontSize: '1rem' }} 
+                style={{ flex: '1', minWidth: '250px', padding: '1.2rem 1.5rem', background: '#1f2937', border: '1px solid rgba(147,51,234,0.3)', borderRadius: '12px', color: 'white', fontSize: '1rem' }} 
               />
               <ValidationError prefix="Email" field="email" errors={state.errors} />
               
               <button 
                 type="submit"
                 disabled={state.submitting}
-                style={{ padding: '1.2rem 2rem', borderRadius: '12px', fontWeight: '700', border: 'none', background: state.submitting ? '#666' : 'linear-gradient(135deg, #9333ea, #22d3ee)', color: 'white', cursor: state.submitting ? 'not-allowed' : 'pointer' }}
+                style={{ padding: '1.2rem 2rem', borderRadius: '12px', fontWeight: '700', border: 'none', background: state.submitting ? '#666' : 'linear-gradient(135deg, #9333ea, #22d3ee)', color: 'white', cursor: state.submitting ? 'not-allowed' : 'pointer', minWidth: '150px' }}
               >
                 {state.submitting ? 'Joining...' : 'Join Waitlist'}
               </button>
