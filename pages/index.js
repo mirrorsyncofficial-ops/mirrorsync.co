@@ -14,9 +14,19 @@ export default function Home() {
         body { background: linear-gradient(to bottom, #1a1a2e, #0f0f23, #1a1a2e); }
         @media (max-width: 768px) {
           .desktop-nav { display: none; }
+          .hero-title { font-size: 2.5rem !important; }
+          .hero-subtitle { font-size: 1.1rem !important; }
+          .features-grid { grid-template-columns: 1fr !important; }
         }
         @media (min-width: 769px) {
           .mobile-menu-btn { display: none; }
+        }
+        .feature-card {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .feature-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 30px rgba(147,51,234,0.3);
         }
       `}</style>
 
@@ -27,9 +37,8 @@ export default function Home() {
           
           {/* Desktop Navigation */}
           <nav className="desktop-nav" style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-            <a href="#features" style={{ color: '#9ca3af', textDecoration: 'none', fontWeight: '500' }}>Features</a>
+            <a href="#features" style={{ color: '#9ca3af', textDecoration: 'none', fontWeight: '500', transition: 'color 0.3s' }}>Features</a>
             <a href="#how-it-works" style={{ color: '#9ca3af', textDecoration: 'none', fontWeight: '500' }}>How It Works</a>
-            <a href="#pricing" style={{ color: '#9ca3af', textDecoration: 'none', fontWeight: '500' }}>Pricing</a>
             <a href="#waitlist" style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', background: 'linear-gradient(135deg, #9333ea, #22d3ee)', color: 'white', textDecoration: 'none', fontWeight: '600' }}>Join Waitlist</a>
           </nav>
 
@@ -57,7 +66,6 @@ export default function Home() {
             <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <a href="#features" onClick={() => setMobileMenuOpen(false)} style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem', fontWeight: '500' }}>Features</a>
               <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem', fontWeight: '500' }}>How It Works</a>
-              <a href="#pricing" onClick={() => setMobileMenuOpen(false)} style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem', fontWeight: '500' }}>Pricing</a>
               <a href="#waitlist" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', textAlign: 'center', padding: '1rem', borderRadius: '8px', background: 'linear-gradient(135deg, #9333ea, #22d3ee)', color: 'white', textDecoration: 'none', fontWeight: '600', fontSize: '1.2rem', marginTop: '1rem' }}>Join Waitlist</a>
             </nav>
           </div>
@@ -68,13 +76,51 @@ export default function Home() {
       <div style={{ padding: '10rem 2rem 5rem', textAlign: 'center', maxWidth: '1200px', margin: '0 auto', color: 'white' }}>
         <div style={{ display: 'inline-block', padding: '0.5rem 1.5rem', background: 'rgba(147,51,234,0.1)', border: '1px solid rgba(147,51,234,0.3)', borderRadius: '50px', fontSize: '0.9rem', color: '#a855f7', marginBottom: '2rem' }}>🚀 Now Live on Solana Devnet</div>
         
-        <h1 style={{ fontSize: '4.5rem', fontWeight: '900', lineHeight: '1.1', marginBottom: '2rem', background: 'linear-gradient(135deg, #a855f7, #10b9f1, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Copy Profitable Traders<br />on Solana</h1>
+        <h1 className="hero-title" style={{ fontSize: '4.5rem', fontWeight: '900', lineHeight: '1.1', marginBottom: '2rem', background: 'linear-gradient(135deg, #a855f7, #10b9f1, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Copy Profitable Traders<br />on Solana</h1>
         
-        <p style={{ fontSize: '1.5rem', color: '#9ca3af', marginBottom: '3rem', maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>AI-verified strategies. Non-custodial security. Zero fees until you profit.</p>
+        <p className="hero-subtitle" style={{ fontSize: '1.5rem', color: '#9ca3af', marginBottom: '3rem', maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>AI-verified strategies. Non-custodial security. Zero fees until you profit.</p>
         
         <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', marginBottom: '2rem', flexWrap: 'wrap' }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '600', color: '#fbbf24' }}>✓ Built on Solana</span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '600', color: '#22d3ee' }}>✓ Non-Custodial</span>
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <div id="features" style={{ padding: '6rem 2rem', maxWidth: '1200px', margin: '0 auto', color: 'white' }}>
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <h2 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '1rem', background: 'linear-gradient(135deg, #a855f7, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Why MirrorSync?</h2>
+          <p style={{ fontSize: '1.2rem', color: '#9ca3af', maxWidth: '600px', margin: '0 auto' }}>Copy trades from verified profitable traders automatically</p>
+        </div>
+
+        <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2rem' }}>
+          {/* Feature 1 */}
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, rgba(147,51,234,0.1), rgba(34,211,238,0.05))', border: '1px solid rgba(147,51,234,0.3)', borderRadius: '16px', padding: '2rem' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🤖</div>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1rem', color: '#a855f7' }}>AI-Verified Traders</h3>
+            <p style={{ color: '#9ca3af', lineHeight: '1.6' }}>Only top-performing traders with verified track records. Our AI continuously monitors performance and risk metrics.</p>
+          </div>
+
+          {/* Feature 2 */}
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, rgba(34,211,238,0.1), rgba(147,51,234,0.05))', border: '1px solid rgba(34,211,238,0.3)', borderRadius: '16px', padding: '2rem' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1rem', color: '#22d3ee' }}>Non-Custodial Security</h3>
+            <p style={{ color: '#9ca3af', lineHeight: '1.6' }}>Your keys, your crypto. Trades execute directly from your wallet. We never hold your funds.</p>
+          </div>
+
+          {/* Feature 3 */}
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, rgba(251,191,36,0.1), rgba(147,51,234,0.05))', border: '1px solid rgba(251,191,36,0.3)', borderRadius: '16px', padding: '2rem' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚡</div>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1rem', color: '#fbbf24' }}>Real-Time Mirroring</h3>
+            <p style={{ color: '#9ca3af', lineHeight: '1.6' }}>Lightning-fast execution on Solana. Copy trades in milliseconds, not minutes.</p>
+          </div>
+
+          {/* Feature 4 */}
+          <div className="feature-card" style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,211,238,0.05))', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '16px', padding: '2rem' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💰</div>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1rem', color: '#22c55e' }}>Performance-Based Fees</h3>
+            <p style={{ color: '#9ca3af', lineHeight: '1.6' }}>Zero fees until you profit. We only succeed when you succeed. Fair and transparent pricing.</p>
+          </div>
         </div>
       </div>
 
@@ -100,7 +146,7 @@ export default function Home() {
           <>
             <p style={{ fontSize: '1.2rem', color: '#9ca3af', marginBottom: '2rem' }}>Join 500+ traders on the waitlist</p>
             
-            <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', maxWidth: '600px', margin: '0 auto', flexWrap: 'wrap' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', maxWidth: '600px', margin: '0 auto', flexWrap: 'wrap', justifyContent: 'center' }}>
               <input 
                 id="email"
                 type="email" 
