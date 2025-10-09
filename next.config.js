@@ -1,4 +1,4 @@
-﻿/** @type {import('next').NextConfig} */
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   async headers() {
     return [
@@ -13,17 +13,19 @@ const nextConfig = {
         ]
       }
     ];
+  },
+
+  // www → root
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.mirrorsync.co" }],
+        destination: "https://mirrorsync.co/:path*",
+        permanent: true
+      }
+    ];
   }
 };
-module.exports = nextConfig;
-async redirects() {
-  return [
-    {
-      source: "/:path*",
-      has: [{ type: "host", value: "www.mirrorsync.co" }],
-      destination: "https://mirrorsync.co/:path*",
-      permanent: true
-    }
-  ];
-},
 
+module.exports = nextConfig;
