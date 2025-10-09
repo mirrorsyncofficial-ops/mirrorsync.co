@@ -2,28 +2,19 @@
 import { useForm, ValidationError } from '@formspree/react';
 import { useEffect, useState } from 'react';
 
-const LINKS = {
-  x: 'https://x.com/yourhandle',            // TODO: replace
-  discord: 'https://discord.gg/yourinvite', // TODO: replace
-  telegram: 'https://t.me/yourchannel',     // TODO: replace
-  devnetDemo: '', // put your actual Devnet demo URL here when ready. If empty, modal will route to waitlist.
-};
-
-// Honest status map — edit as you ship
-// available | beta | planned
+// Honest status map — edit as you ship: available | beta | planned
 const FEATURE_STATUS = {
   aiVerification: 'planned',
   nonCustodial: 'beta',
   realTimeMirroring: 'planned',
   perfFees: 'available',
 };
+// Optional devnet demo link (leave empty to route clicks to waitlist)
+const DEVNET_DEMO = '';
 
 function StatusBadge({ status }) {
   const styles = {
-    base: {
-      display: 'inline-block', padding: '0.25rem 0.6rem', borderRadius: 999,
-      fontSize: '0.75rem', fontWeight: 800, border: '1px solid', marginLeft: '0.5rem'
-    },
+    base: { display: 'inline-block', padding: '0.25rem 0.6rem', borderRadius: 999, fontSize: '0.75rem', fontWeight: 800, border: '1px solid', marginLeft: '0.5rem' },
     available: { color: '#10b981', borderColor: 'rgba(16,185,129,0.5)', background: 'rgba(16,185,129,0.12)' },
     beta: { color: '#f59e0b', borderColor: 'rgba(245,158,11,0.5)', background: 'rgba(245,158,11,0.12)' },
     planned: { color: '#9ca3af', borderColor: 'rgba(156,163,175,0.5)', background: 'rgba(156,163,175,0.12)' },
@@ -32,16 +23,13 @@ function StatusBadge({ status }) {
 }
 
 export default function Home() {
-  const [state, handleSubmit] = useForm('mkgqvbkr');
+  const [state, handleSubmit] = useForm('mkgqvbkr'); // your Formspree ID
   const [email, setEmail] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // Simple modal
   const [modal, setModal] = useState(null);
-  const openModal = (payload) => setModal(payload);
+  const openModal = (p) => setModal(p);
   const closeModal = () => setModal(null);
 
-  // Smooth close on hash navigation
   useEffect(() => {
     const close = () => setMobileMenuOpen(false);
     window.addEventListener('hashchange', close);
@@ -49,11 +37,8 @@ export default function Home() {
   }, []);
 
   const Section = ({ id, children, style }) => (
-    <section id={id} style={{ padding: '6rem 2rem', maxWidth: '1200px', margin: '0 auto', ...style }}>
-      {children}
-    </section>
+    <section id={id} style={{ padding: '6rem 2rem', maxWidth: '1200px', margin: '0 auto', ...style }}>{children}</section>
   );
-
   const jumpTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
@@ -78,11 +63,7 @@ export default function Home() {
       `}</style>
 
       {/* Header */}
-      <header style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-        background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(147,51,234,0.2)', padding: '1rem 2rem'
-      }}>
+      <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(147,51,234,0.2)', padding: '1rem 2rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <a href="#" style={{ textDecoration: 'none' }}>
             <div style={{ fontSize: '1.5rem', fontWeight: 900 }} className="gradientText">MirrorSync</div>
@@ -96,16 +77,12 @@ export default function Home() {
             <a href="/whitepaper" className="muted" style={{ textDecoration: 'none', fontWeight: 600 }}>Whitepaper</a>
             <a href="/roadmap" className="muted" style={{ textDecoration: 'none', fontWeight: 600 }}>Roadmap</a>
             <a href="/changelog" className="muted" style={{ textDecoration: 'none', fontWeight: 600 }}>Changelog</a>
+            <a href="/contact" className="muted" style={{ textDecoration: 'none', fontWeight: 600 }}>Contact</a>
             <a href="#waitlist" className="btnPrimary" style={{ textDecoration: 'none' }}>Join Waitlist</a>
           </nav>
 
           {/* Mobile button */}
-          <button
-            className="mobile-menu-btn"
-            aria-label="Open menu"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            style={{ background: 'none', border: 0, color: 'white', fontSize: '1.75rem', padding: '0.25rem 0.5rem', cursor: 'pointer' }}
-          >
+          <button className="mobile-menu-btn" aria-label="Open menu" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} style={{ background: 'none', border: 0, color: 'white', fontSize: '1.75rem', padding: '0.25rem 0.5rem', cursor: 'pointer' }}>
             {mobileMenuOpen ? '✕' : '☰'}
           </button>
         </div>
@@ -121,10 +98,10 @@ export default function Home() {
                 ['/whitepaper','Whitepaper'],
                 ['/roadmap','Roadmap'],
                 ['/changelog','Changelog'],
+                ['/contact','Contact'],
                 ['#waitlist','Join Waitlist'],
               ].map(([href,label]) => (
-                <a key={href} href={href} onClick={() => setMobileMenuOpen(false)}
-                   style={{ textDecoration: 'none', padding: '0.75rem 0', textAlign: 'center', fontWeight: 700 }}>
+                <a key={href} href={href} onClick={() => setMobileMenuOpen(false)} style={{ textDecoration: 'none', padding: '0.75rem 0', textAlign: 'center', fontWeight: 700 }}>
                   {label}
                 </a>
               ))}
@@ -220,6 +197,8 @@ export default function Home() {
             <p className="muted" style={{ marginBottom: '1.25rem' }}>Join early access — limited beta invites.</p>
             <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.75rem', maxWidth: '600px', margin: '0 auto', flexWrap: 'wrap' }}>
               <input type="hidden" name="source" value="waitlist_home" />
+              {/* spam honeypot */}
+              <input type="text" name="_gotcha" style={{ display: 'none' }} tabIndex="-1" autoComplete="off" />
               <input
                 id="email" type="email" name="email" placeholder="Enter your email"
                 value={email} onChange={(e) => setEmail(e.target.value)} required
@@ -238,16 +217,17 @@ export default function Home() {
         )}
       </Section>
 
-      {/* Footer */}
+      {/* Footer (no socials) */}
       <footer style={{ borderTop: '1px solid rgba(147,51,234,0.2)', padding: '2.5rem 2rem', textAlign: 'center' }}>
         <div className="gradientText" style={{ fontSize: '1.25rem', fontWeight: 900, marginBottom: '0.25rem' }}>MirrorSync</div>
         <p className="muted" style={{ marginBottom: '1rem' }}>© {new Date().getFullYear()} Mirror Sync. Building in public.</p>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap:'wrap' }}>
-          <a href={LINKS.x} target="_blank" rel="noreferrer" className="card" style={{ textDecoration: 'none' }}>𝕏</a>
-          <a href={LINKS.discord} target="_blank" rel="noreferrer" className="card" style={{ textDecoration: 'none' }}>Discord</a>
-          <a href={LINKS.telegram} target="_blank" rel="noreferrer" className="card" style={{ textDecoration: 'none' }}>Telegram</a>
+          <a href="/contact" className="card" style={{ textDecoration:'none' }}>Contact</a>
+          <a href="#waitlist" className="card" style={{ textDecoration:'none' }}>Join Waitlist</a>
+          <a href="/changelog" className="card" style={{ textDecoration:'none' }}>Changelog</a>
+          <a href="/roadmap" className="card" style={{ textDecoration:'none' }}>Roadmap</a>
         </div>
-        <p className="muted" style={{ marginTop: '0.75rem', fontSize:'0.85rem' }}>
+        <p className="muted" style={{ marginTop:'0.75rem', fontSize:'0.85rem' }}>
           Transparency: Some features are in <b>Beta</b> or <b>Planned</b>. We clearly label availability and never over-promise.
         </p>
       </footer>
@@ -262,8 +242,8 @@ export default function Home() {
             </div>
             <p className="muted" style={{ marginTop:'0.75rem' }}>{modal.desc}</p>
             <div style={{ display:'flex', gap:'0.75rem', marginTop:'1rem' }}>
-              {modal.status === 'available' && LINKS.devnetDemo ? (
-                <a href={LINKS.devnetDemo} target="_blank" rel="noreferrer" className="btnPrimary" style={{ textDecoration:'none' }}>Open Devnet Demo</a>
+              {modal.status === 'available' && DEVNET_DEMO ? (
+                <a href={DEVNET_DEMO} target="_blank" rel="noreferrer" className="btnPrimary" style={{ textDecoration:'none' }}>Open Devnet Demo</a>
               ) : (
                 <button className="btnPrimary" onClick={() => { closeModal(); jumpTo('waitlist'); }}>Request Access</button>
               )}
