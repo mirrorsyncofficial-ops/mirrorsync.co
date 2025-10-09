@@ -1,185 +1,277 @@
 'use client';
 import { useForm, ValidationError } from '@formspree/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+const LINKS = {
+  x: 'https://x.com/yourhandle',            // TODO: replace
+  discord: 'https://discord.gg/yourinvite', // TODO: replace
+  telegram: 'https://t.me/yourchannel',     // TODO: replace
+  devnetDemo: '', // put your actual Devnet demo URL here when ready. If empty, modal will route to waitlist.
+};
+
+// Honest status map — edit as you ship
+// available | beta | planned
+const FEATURE_STATUS = {
+  aiVerification: 'planned',
+  nonCustodial: 'beta',
+  realTimeMirroring: 'planned',
+  perfFees: 'available',
+};
+
+function StatusBadge({ status }) {
+  const styles = {
+    base: {
+      display: 'inline-block', padding: '0.25rem 0.6rem', borderRadius: 999,
+      fontSize: '0.75rem', fontWeight: 800, border: '1px solid', marginLeft: '0.5rem'
+    },
+    available: { color: '#10b981', borderColor: 'rgba(16,185,129,0.5)', background: 'rgba(16,185,129,0.12)' },
+    beta: { color: '#f59e0b', borderColor: 'rgba(245,158,11,0.5)', background: 'rgba(245,158,11,0.12)' },
+    planned: { color: '#9ca3af', borderColor: 'rgba(156,163,175,0.5)', background: 'rgba(156,163,175,0.12)' },
+  };
+  return <span style={{ ...styles.base, ...(styles[status]||styles.planned) }}>{status.toUpperCase()}</span>;
+}
 
 export default function Home() {
-  const [state, handleSubmit] = useForm("mkgqvbkr");
+  const [state, handleSubmit] = useForm('mkgqvbkr');
   const [email, setEmail] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Simple modal
+  const [modal, setModal] = useState(null);
+  const openModal = (payload) => setModal(payload);
+  const closeModal = () => setModal(null);
+
+  // Smooth close on hash navigation
+  useEffect(() => {
+    const close = () => setMobileMenuOpen(false);
+    window.addEventListener('hashchange', close);
+    return () => window.removeEventListener('hashchange', close);
+  }, []);
+
+  const Section = ({ id, children, style }) => (
+    <section id={id} style={{ padding: '6rem 2rem', maxWidth: '1200px', margin: '0 auto', ...style }}>
+      {children}
+    </section>
+  );
+
+  const jumpTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+
   return (
-    <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div style={{ fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif', color: 'white' }}>
       <style jsx>{`
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: linear-gradient(to bottom, #1a1a2e, #0f0f23, #1a1a2e); }
-        @media (max-width: 768px) {
-          .desktop-nav { display: none; }
-          .hero-title { font-size: 2.5rem !important; }
-          .hero-subtitle { font-size: 1.1rem !important; }
-          .features-grid { grid-template-columns: 1fr !important; }
-        }
-        @media (min-width: 769px) {
-          .mobile-menu-btn { display: none; }
-        }
-        .feature-card {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .feature-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 10px 30px rgba(147,51,234,0.3);
-        }
+        * { box-sizing: border-box; }
+        html, body, #__next { height: 100%; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; background: linear-gradient(to bottom, #0f0f23, #1a1a2e 40%, #0f0f23); }
+        a { color: inherit; }
+        @media (max-width: 768px) { .desktop-nav { display: none; } }
+        @media (min-width: 769px) { .mobile-menu-btn { display: none; } }
+        .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(147,51,234,0.25); border-radius: 16px; padding: 1.5rem; }
+        .chip { display: inline-block; padding: 0.5rem 1rem; border-radius: 999px; background: rgba(147,51,234,0.12); border: 1px solid rgba(147,51,234,0.3); color: #a855f7; font-weight: 600; font-size: 0.9rem; }
+        .gradientText { background: linear-gradient(135deg, #a855f7, #10b9f1, #22d3ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btnPrimary { padding: 1rem 1.5rem; border: 0; border-radius: 12px; font-weight: 700; background: linear-gradient(135deg, #9333ea, #22d3ee); color: white; cursor: pointer; }
+        .muted { color: #9ca3af; }
+        .featureCard { cursor: pointer; transition: transform .12s ease, border-color .12s ease; }
+        .featureCard:hover { transform: translateY(-2px); border-color: rgba(147,51,234,0.5); }
+        .modalBackdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); z-index: 80; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .modalBody { width: 100%; max-width: 560px; background: rgba(15,15,35,0.98); border: 1px solid rgba(147,51,234,0.35); border-radius: 16px; padding: 1.25rem; }
       `}</style>
 
       {/* Header */}
-      <div style={{ position: 'fixed', top: 0, width: '100%', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(147,51,234,0.2)', zIndex: 50, padding: '1.5rem 2rem' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 'bold', background: 'linear-gradient(to right, #a855f7, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>MirrorSync</div>
-          
-          {/* Desktop Navigation */}
-          <nav className="desktop-nav" style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-            <a href="#features" style={{ color: '#9ca3af', textDecoration: 'none', fontWeight: '500', transition: 'color 0.3s' }}>Features</a>
-            <a href="#how-it-works" style={{ color: '#9ca3af', textDecoration: 'none', fontWeight: '500' }}>How It Works</a>
-            <a href="#waitlist" style={{ padding: '0.75rem 1.5rem', borderRadius: '8px', background: 'linear-gradient(135deg, #9333ea, #22d3ee)', color: 'white', textDecoration: 'none', fontWeight: '600' }}>Join Waitlist</a>
+      <header style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+        background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid rgba(147,51,234,0.2)', padding: '1rem 2rem'
+      }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <a href="#" style={{ textDecoration: 'none' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: 900 }} className="gradientText">MirrorSync</div>
+          </a>
+
+          {/* Desktop nav */}
+          <nav className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+            <a href="#features" className="muted" style={{ textDecoration: 'none', fontWeight: 600 }}>Features</a>
+            <a href="#how-it-works" className="muted" style={{ textDecoration: 'none', fontWeight: 600 }}>How It Works</a>
+            <a href="#pricing" className="muted" style={{ textDecoration: 'none', fontWeight: 600 }}>Pricing</a>
+            <a href="/whitepaper" className="muted" style={{ textDecoration: 'none', fontWeight: 600 }}>Whitepaper</a>
+            <a href="/roadmap" className="muted" style={{ textDecoration: 'none', fontWeight: 600 }}>Roadmap</a>
+            <a href="/changelog" className="muted" style={{ textDecoration: 'none', fontWeight: 600 }}>Changelog</a>
+            <a href="#waitlist" className="btnPrimary" style={{ textDecoration: 'none' }}>Join Waitlist</a>
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button 
+          {/* Mobile button */}
+          <button
             className="mobile-menu-btn"
+            aria-label="Open menu"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            style={{ background: 'none', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer', padding: '0.5rem' }}
+            style={{ background: 'none', border: 0, color: 'white', fontSize: '1.75rem', padding: '0.25rem 0.5rem', cursor: 'pointer' }}
           >
             {mobileMenuOpen ? '✕' : '☰'}
           </button>
         </div>
-      </div>
 
-      {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div 
-          onClick={() => setMobileMenuOpen(false)}
-          style={{ position: 'fixed', top: '73px', left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', zIndex: 40 }}
-        >
-          <div 
-            onClick={(e) => e.stopPropagation()}
-            style={{ background: 'rgba(15,15,35,0.98)', backdropFilter: 'blur(20px)', padding: '2rem', borderBottom: '1px solid rgba(147,51,234,0.2)' }}
-          >
-            <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <a href="#features" onClick={() => setMobileMenuOpen(false)} style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem', fontWeight: '500' }}>Features</a>
-              <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem', fontWeight: '500' }}>How It Works</a>
-              <a href="#waitlist" onClick={() => setMobileMenuOpen(false)} style={{ display: 'block', textAlign: 'center', padding: '1rem', borderRadius: '8px', background: 'linear-gradient(135deg, #9333ea, #22d3ee)', color: 'white', textDecoration: 'none', fontWeight: '600', fontSize: '1.2rem', marginTop: '1rem' }}>Join Waitlist</a>
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div style={{ borderTop: '1px solid rgba(147,51,234,0.2)' }}>
+            <nav style={{ display: 'flex', flexDirection: 'column', gap: '1rem', padding: '1rem 0' }}>
+              {[
+                ['#features','Features'],
+                ['#how-it-works','How It Works'],
+                ['#pricing','Pricing'],
+                ['/whitepaper','Whitepaper'],
+                ['/roadmap','Roadmap'],
+                ['/changelog','Changelog'],
+                ['#waitlist','Join Waitlist'],
+              ].map(([href,label]) => (
+                <a key={href} href={href} onClick={() => setMobileMenuOpen(false)}
+                   style={{ textDecoration: 'none', padding: '0.75rem 0', textAlign: 'center', fontWeight: 700 }}>
+                  {label}
+                </a>
+              ))}
             </nav>
           </div>
-        </div>
-      )}
+        )}
+      </header>
+
+      {/* Spacer for fixed header */}
+      <div style={{ height: '72px' }} />
 
       {/* Hero */}
-      <div style={{ padding: '10rem 2rem 5rem', textAlign: 'center', maxWidth: '1200px', margin: '0 auto', color: 'white' }}>
-        <div style={{ display: 'inline-block', padding: '0.5rem 1.5rem', background: 'rgba(147,51,234,0.1)', border: '1px solid rgba(147,51,234,0.3)', borderRadius: '50px', fontSize: '0.9rem', color: '#a855f7', marginBottom: '2rem' }}>🚀 Now Live on Solana Devnet</div>
-        
-        <h1 className="hero-title" style={{ fontSize: '4.5rem', fontWeight: '900', lineHeight: '1.1', marginBottom: '2rem', background: 'linear-gradient(135deg, #a855f7, #10b9f1, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Copy Profitable Traders<br />on Solana</h1>
-        
-        <p className="hero-subtitle" style={{ fontSize: '1.5rem', color: '#9ca3af', marginBottom: '3rem', maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>AI-verified strategies. Non-custodial security. Zero fees until you profit.</p>
-        
-        <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', marginBottom: '2rem', flexWrap: 'wrap' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '600', color: '#fbbf24' }}>✓ Built on Solana</span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '600', color: '#22d3ee' }}>✓ Non-Custodial</span>
+      <Section id="hero" style={{ textAlign: 'center', paddingTop: '4rem' }}>
+        <span className="chip">🚀 Devnet prep — building in public</span>
+        <h1 style={{ fontSize: '3.2rem', lineHeight: 1.1, fontWeight: 900, margin: '1rem 0 1rem' }} className="gradientText">
+          Copy Profitable Traders<br />on Solana
+        </h1>
+        <p className="muted" style={{ fontSize: '1.2rem', maxWidth: '800px', margin: '0 auto 2rem' }}>
+          AI-verified strategies. Non-custodial security. Fees only when you profit.
+        </p>
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
+          <span style={{ fontWeight: 700, color: '#fbbf24' }}>✓ Built on Solana</span>
+          <span style={{ fontWeight: 700, color: '#22d3ee' }}>✓ Non-Custodial</span>
+          <span style={{ fontWeight: 700, color: '#34d399' }}>✓ Performance-Based Fees</span>
         </div>
-      </div>
+        <a href="#waitlist" className="btnPrimary" style={{ textDecoration: 'none' }}>Join the Waitlist</a>
+      </Section>
 
-      {/* Features Section */}
-      <div id="features" style={{ padding: '6rem 2rem', maxWidth: '1200px', margin: '0 auto', color: 'white' }}>
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <h2 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '1rem', background: 'linear-gradient(135deg, #a855f7, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Why MirrorSync?</h2>
-          <p style={{ fontSize: '1.2rem', color: '#9ca3af', maxWidth: '600px', margin: '0 auto' }}>Copy trades from verified profitable traders automatically</p>
-        </div>
-
-        <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2rem' }}>
-          {/* Feature 1 */}
-          <div className="feature-card" style={{ background: 'linear-gradient(135deg, rgba(147,51,234,0.1), rgba(34,211,238,0.05))', border: '1px solid rgba(147,51,234,0.3)', borderRadius: '16px', padding: '2rem' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🤖</div>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1rem', color: '#a855f7' }}>AI-Verified Traders</h3>
-            <p style={{ color: '#9ca3af', lineHeight: '1.6' }}>Only top-performing traders with verified track records. Our AI continuously monitors performance and risk metrics.</p>
-          </div>
-
-          {/* Feature 2 */}
-          <div className="feature-card" style={{ background: 'linear-gradient(135deg, rgba(34,211,238,0.1), rgba(147,51,234,0.05))', border: '1px solid rgba(34,211,238,0.3)', borderRadius: '16px', padding: '2rem' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔒</div>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1rem', color: '#22d3ee' }}>Non-Custodial Security</h3>
-            <p style={{ color: '#9ca3af', lineHeight: '1.6' }}>Your keys, your crypto. Trades execute directly from your wallet. We never hold your funds.</p>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="feature-card" style={{ background: 'linear-gradient(135deg, rgba(251,191,36,0.1), rgba(147,51,234,0.05))', border: '1px solid rgba(251,191,36,0.3)', borderRadius: '16px', padding: '2rem' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚡</div>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1rem', color: '#fbbf24' }}>Real-Time Mirroring</h3>
-            <p style={{ color: '#9ca3af', lineHeight: '1.6' }}>Lightning-fast execution on Solana. Copy trades in milliseconds, not minutes.</p>
-          </div>
-
-          {/* Feature 4 */}
-          <div className="feature-card" style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,211,238,0.05))', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '16px', padding: '2rem' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💰</div>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '1rem', color: '#22c55e' }}>Performance-Based Fees</h3>
-            <p style={{ color: '#9ca3af', lineHeight: '1.6' }}>Zero fees until you profit. We only succeed when you succeed. Fair and transparent pricing.</p>
-          </div>
-        </div>
-      </div>
-
-      {/* CTA with Formspree */}
-      <div id="waitlist" style={{ padding: '6rem 2rem', textAlign: 'center', color: 'white' }}>
-        <h2 style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '2rem' }}>
-          {state.succeeded ? '🎉 Welcome to the Waitlist!' : 'Stop Losing Money.<br />Start Copying Winners.'}
-        </h2>
-        
-        {state.succeeded ? (
-          <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-            <p style={{ fontSize: '1.2rem', color: '#9ca3af', marginBottom: '2rem' }}>
-              Check your email! We'll notify you when we launch.
-            </p>
-            <button 
-              onClick={() => window.location.reload()} 
-              style={{ padding: '1.2rem 2rem', borderRadius: '12px', fontWeight: '700', border: 'none', background: 'linear-gradient(135deg, #9333ea, #22d3ee)', color: 'white', cursor: 'pointer', fontSize: '1rem' }}
-            >
-              Submit Another Email
+      {/* Features (click opens modal) */}
+      <Section id="features" style={{ paddingTop: '2rem' }}>
+        <h2 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.75rem' }}>Why MirrorSync?</h2>
+        <p className="muted" style={{ marginBottom: '1.25rem' }}>Click any card for details. We label what’s live, in beta, or planned.</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+          {[
+            { k:'aiVerification', icon:'🤖', title:'AI-Verified Traders', desc:'Scoring to filter luck and surface consistent performance.' },
+            { k:'nonCustodial', icon:'🔒', title:'Non-Custodial', desc:'Funds stay in your wallet. Smart contracts execute your intent.' },
+            { k:'realTimeMirroring', icon:'⚡', title:'Real-Time Mirroring', desc:'Near-instant execution across followers with on-chain settlement.' },
+            { k:'perfFees', icon:'💰', title:'Fees Only on Profit', desc:'Execution 0.10% + 10% performance (8% Guide / 2% platform).' },
+          ].map(({k,icon,title,desc}) => (
+            <button key={k} className="card featureCard" onClick={() => openModal({ k, title, desc, status: FEATURE_STATUS[k] })} style={{ textAlign: 'left', background:'transparent' }}>
+              <div style={{ fontSize: '2rem' }}>{icon}</div>
+              <h3 style={{ margin: '0.75rem 0', fontSize: '1.15rem' }}>
+                {title} <StatusBadge status={FEATURE_STATUS[k]} />
+              </h3>
+              <p className="muted" style={{ lineHeight: 1.6 }}>{desc}</p>
             </button>
-          </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* How It Works */}
+      <Section id="how-it-works">
+        <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1rem' }}>How It Works</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+          {[
+            ['1','Connect','Link your Solana wallet. No deposits needed.'],
+            ['2','Select','Choose a verified Guide that matches your risk.'],
+            ['3','Allocate','Pick allocation and risk limits.'],
+            ['4','Copy','Trades mirror automatically. You stay in control.'],
+          ].map(([step,title,desc]) => (
+            <div key={step} className="card" style={{ textAlign: 'center' }}>
+              <div className="chip" style={{ marginBottom: '0.75rem' }}>Step {step}</div>
+              <h3 style={{ margin: 0 }}>{title}</h3>
+              <p className="muted" style={{ marginTop: '0.5rem' }}>{desc}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Pricing */}
+      <Section id="pricing">
+        <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1rem' }}>Pricing</h2>
+        <div className="card" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+          <div><h3 style={{ marginTop: 0 }}>Execution Fee</h3><p className="muted">0.10% per mirrored trade</p></div>
+          <div><h3 style={{ marginTop: 0 }}>Performance Fee</h3><p className="muted">10% of profits — 8% Guide / 2% platform</p></div>
+          <div><h3 style={{ marginTop: 0 }}>Example</h3><p className="muted">$1,000 profit → $80 to Guide, $20 platform, $900 you</p></div>
+        </div>
+        <p className="muted" style={{ marginTop: '0.75rem', fontSize: '0.9rem' }}>Notes: Fees may change after audit and mainnet launch.</p>
+      </Section>
+
+      {/* Waitlist (Formspree) */}
+      <Section id="waitlist" style={{ textAlign: 'center' }}>
+        <h2 style={{ fontSize: '2.1rem', fontWeight: 900, marginBottom: '0.75rem' }}>
+          {state.succeeded ? '🎉 Welcome to the Waitlist!' : 'Stop Losing Money. Start Copying Winners.'}
+        </h2>
+        {state.succeeded ? (
+          <>
+            <p className="muted" style={{ marginBottom: '1.25rem' }}>Check your email! We’ll notify you when we launch.</p>
+            <button onClick={() => window.location.reload()} className="btnPrimary">Submit Another Email</button>
+          </>
         ) : (
           <>
-            <p style={{ fontSize: '1.2rem', color: '#9ca3af', marginBottom: '2rem' }}>Join 500+ traders on the waitlist</p>
-            
-            <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '1rem', maxWidth: '600px', margin: '0 auto', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <input 
-                id="email"
-                type="email" 
-                name="email"
-                placeholder="Enter your email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                style={{ flex: '1', minWidth: '250px', padding: '1.2rem 1.5rem', background: '#1f2937', border: '1px solid rgba(147,51,234,0.3)', borderRadius: '12px', color: 'white', fontSize: '1rem' }} 
+            <p className="muted" style={{ marginBottom: '1.25rem' }}>Join early access — limited beta invites.</p>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '0.75rem', maxWidth: '600px', margin: '0 auto', flexWrap: 'wrap' }}>
+              <input type="hidden" name="source" value="waitlist_home" />
+              <input
+                id="email" type="email" name="email" placeholder="Enter your email"
+                value={email} onChange={(e) => setEmail(e.target.value)} required
+                style={{ flex:'1', minWidth:'240px', padding:'1rem 1.25rem', background:'#111827',
+                  border:'1px solid rgba(147,51,234,0.35)', borderRadius:'12px', color:'white', fontSize:'1rem' }}
               />
               <ValidationError prefix="Email" field="email" errors={state.errors} />
-              
-              <button 
-                type="submit"
-                disabled={state.submitting}
-                style={{ padding: '1.2rem 2rem', borderRadius: '12px', fontWeight: '700', border: 'none', background: state.submitting ? '#666' : 'linear-gradient(135deg, #9333ea, #22d3ee)', color: 'white', cursor: state.submitting ? 'not-allowed' : 'pointer', minWidth: '150px' }}
-              >
-                {state.submitting ? 'Joining...' : 'Join Waitlist'}
+              <button type="submit" disabled={state.submitting} className="btnPrimary" style={{ minWidth: 160 }}>
+                {state.submitting ? 'Joining…' : 'Join Waitlist'}
               </button>
             </form>
-            
             {state.errors && state.errors.length > 0 && (
-              <p style={{ color: '#ef4444', marginTop: '1rem' }}>Oops! There was an error. Please try again.</p>
+              <p style={{ color: '#ef4444', marginTop: '0.75rem' }}>Oops! There was an error. Please try again.</p>
             )}
           </>
         )}
-      </div>
+      </Section>
 
       {/* Footer */}
-      <div style={{ borderTop: '1px solid rgba(147,51,234,0.2)', padding: '3rem 2rem', textAlign: 'center', color: '#9ca3af' }}>
-        <div style={{ fontSize: '1.25rem', fontWeight: 'bold', background: 'linear-gradient(to right, #a855f7, #22d3ee)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', marginBottom: '1rem' }}>MirrorSync</div>
-        <p>© 2025 Mirror Sync. Built on Solana.</p>
-      </div>
+      <footer style={{ borderTop: '1px solid rgba(147,51,234,0.2)', padding: '2.5rem 2rem', textAlign: 'center' }}>
+        <div className="gradientText" style={{ fontSize: '1.25rem', fontWeight: 900, marginBottom: '0.25rem' }}>MirrorSync</div>
+        <p className="muted" style={{ marginBottom: '1rem' }}>© {new Date().getFullYear()} Mirror Sync. Building in public.</p>
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap:'wrap' }}>
+          <a href={LINKS.x} target="_blank" rel="noreferrer" className="card" style={{ textDecoration: 'none' }}>𝕏</a>
+          <a href={LINKS.discord} target="_blank" rel="noreferrer" className="card" style={{ textDecoration: 'none' }}>Discord</a>
+          <a href={LINKS.telegram} target="_blank" rel="noreferrer" className="card" style={{ textDecoration: 'none' }}>Telegram</a>
+        </div>
+        <p className="muted" style={{ marginTop: '0.75rem', fontSize:'0.85rem' }}>
+          Transparency: Some features are in <b>Beta</b> or <b>Planned</b>. We clearly label availability and never over-promise.
+        </p>
+      </footer>
+
+      {/* Modal */}
+      {modal && (
+        <div className="modalBackdrop" onClick={closeModal} role="dialog" aria-modal="true" aria-label={modal.title}>
+          <div className="modalBody" onClick={(e) => e.stopPropagation()}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+              <h3 style={{ margin:0 }}>{modal.title} <StatusBadge status={modal.status} /></h3>
+              <button onClick={closeModal} aria-label="Close" style={{ background:'none', border:0, color:'#fff', fontSize:'1.25rem', cursor:'pointer' }}>✕</button>
+            </div>
+            <p className="muted" style={{ marginTop:'0.75rem' }}>{modal.desc}</p>
+            <div style={{ display:'flex', gap:'0.75rem', marginTop:'1rem' }}>
+              {modal.status === 'available' && LINKS.devnetDemo ? (
+                <a href={LINKS.devnetDemo} target="_blank" rel="noreferrer" className="btnPrimary" style={{ textDecoration:'none' }}>Open Devnet Demo</a>
+              ) : (
+                <button className="btnPrimary" onClick={() => { closeModal(); jumpTo('waitlist'); }}>Request Access</button>
+              )}
+              <a href="/roadmap" className="card" style={{ textDecoration:'none' }}>View Roadmap</a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
