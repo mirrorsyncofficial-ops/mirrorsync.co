@@ -16,3 +16,14 @@ const nextConfig = {
   }
 };
 module.exports = nextConfig;
+async redirects() {
+  return [
+    {
+      source: "/:path*",
+      has: [{ type: "host", value: "www.mirrorsync.co" }],
+      destination: "https://mirrorsync.co/:path*",
+      permanent: true
+    }
+  ];
+},
+
