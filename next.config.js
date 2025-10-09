@@ -15,7 +15,7 @@ const nextConfig = {
     ];
   },
 
-  // www → root
+  // Redirect www → root
   async redirects() {
     return [
       {
